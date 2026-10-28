@@ -18,7 +18,7 @@ toutes les demandes. C'est a vous d'ecrire celui qui reussit.
 import sys
 from pathlib import Path
 
-import reconfort_io as rio
+from reconfort import reconfort_io as rio
 
 
 def main(argv):

@@ -48,7 +48,7 @@ class ErreurFichier(Exception):
 # Lecture
 # ---------------------------------------------------------------------------
 
-def _lire_json(chemin: str | Path, format_attendu: str) -> Dict[str, Any]:
+def _lire_json(chemin: str | Path,  format_attendu: str) -> Dict[str, Any]:
     """Lit un fichier JSON UTF-8 et verifie son en-tete.
 
     Ce qui EST verifie ici :
