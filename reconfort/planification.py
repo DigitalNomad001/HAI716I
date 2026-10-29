@@ -10,7 +10,7 @@ Directions:Dict[str,Case]={
     "O":(0,-1)}
 
 #on retourne l'ensemble de coordonnées des voisins, case ici est la coordonnée actuelle de robot 
-def voisins(case:Case):
+def voisins(case:Case) -> List[Tuple[str, Case]]:
     ligne,colonne=case
     return [(sens,(ligne+x,colonne+y)) for sens,(x,y) in Directions.items()]
 
@@ -51,6 +51,8 @@ def plus_court_chemin(depart:Case,arrive:Iterable[Case],est_traversable:Callable
             file.append(voisin)
     return None
 
+
+#on reconstruire un chemin de bas à bas 
 def reconstuire(pred:Dict[Case,Optional[Case]],voisin:Case)-> Optional[list[Case]]:
     chemin=[voisin] #chemin est une list
     while pred[chemin[-1]] is not None:
