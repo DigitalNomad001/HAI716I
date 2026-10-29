@@ -10,13 +10,13 @@ Directions:Dict[str,Case]={
     "O":(0,-1)}
 
 #on retourne l'ensemble de coordonnées des voisins, case ici est la coordonnée actuelle de robot 
-def voisins(case:Case) -> List[Tuple[str, Case]]:
+def voisins(case:Case) -> list[Tuple[str, Case]]:
     ligne,colonne=case
     return [(sens,(ligne+x,colonne+y)) for sens,(x,y) in Directions.items()]
 
 
 #on peut retourner le sens vers l'une de direction de voisins avec une destination donnée
-def direction_vers(depart:Case,destination:Case):
+def direction_vers(depart:Case,destination:Case)-> str:
     x_decalage=destination[0]-depart[0]
     y_decalge=destination[1]-depart[1]
     decalage=(x_decalage,y_decalge)

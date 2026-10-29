@@ -13,7 +13,7 @@ Regle de planification : hypothese optimiste (annexe B.5). Une case jamais
 vue est supposee traversable.
 """
 
-from typing import Dict,Tuple,Iterable,List,Mapping
+from typing import Dict,Tuple,Iterable,List,Mapping,Optional
 
 from reconfort.planification import voisins
 
@@ -21,14 +21,27 @@ Case = Tuple[int, int]
 
 #Etat possible d'un état dans une carte mentale
 
+INCONNU = "inconnu"
+LIBRE = "libre"
+MUR = "mur"
+ARMOIRE = "armoire"
+DICTIONNAIRE = "dictionnaire"
+RESIDENT = "resident"
+
 # Valeurs qu'une perception peut annoncer (section 5.5).
 VALEURS_PERCUES = {LIBRE, MUR, ARMOIRE, DICTIONNAIRE, RESIDENT}
 
 # Cases que le robot ne peut pas traverser (section 3.1).
 OBSTACLES = {MUR, ARMOIRE, DICTIONNAIRE, RESIDENT}
 
+class CarteMentale:
+    """Carte mentale du robot.
 
-def __init__(
+    Representation : un dictionnaire {case: etat} qui ne contient que les
+    cases CONNUES. Une case absente du dictionnaire est INCONNU. C'est
+    economique : au debut, presque tout est inconnu.
+    """
+    def __init__(
         self,
         hauteur: int,
         largeur: int,
@@ -65,26 +78,18 @@ def __init__(
 
 
 
-
-"""
->>> list((6, 4))      # tuple → list
-[6, 4]
->>> tuple([6, 4])     # list → tuple
-(6, 4)
-"""
-#---------------------------------------------
-
 # -- consultation ------------------------------------------------------
 
-def dans_grille(self, case: Case) -> bool:
+
+    def dans_grille(self, case: Case) -> bool:
         l, c = case
         return 0 <= l < self.hauteur and 0 <= c < self.largeur
 
-def etat(self, case: Case) -> str:
+    def etat(self, case: Case) -> str:
         """Return état connu (valeur ou string ) de la case si non return INCONNU si jamais vue."""
         return self.cases.get(case, INCONNU)
 
-def est_traversable(self, case: Case) -> bool:
+    def est_traversable(self, case: Case) -> bool:
         """Hypothese optimiste : inconnu = traversable.
         Hors grille et obstacles connus = non traversable.
         C'est cette methode qu'on passe au BFS."""
@@ -92,7 +97,7 @@ def est_traversable(self, case: Case) -> bool:
             return False
         return self.etat(case) not in OBSTACLES
 
-def arrivees_autour(self, cible: Case) -> List[Case]:
+    def arrivees_autour(self, cible: Case) -> List[Case]:
         """Cases ou le robot peut se placer pour interagir avec `cible`
         (armoire, dictionnaire, resident) : ses voisines orthogonales,
         si elles sont encore supposees traversables.
@@ -103,7 +108,7 @@ def arrivees_autour(self, cible: Case) -> List[Case]:
 
  # -- mise a jour -------------------------------------------------------
 
-def mettre_a_jour(self, position: Case, perception: Mapping[str, str]) -> None:
+    def mettre_a_jour(self, position: Case, perception: Mapping[str, str]) -> None:
         """Inscrit une perception : la case du robot est libre, et chacune
         des 4 voisines prend l'etat percu.
 
@@ -119,7 +124,7 @@ def mettre_a_jour(self, position: Case, perception: Mapping[str, str]) -> None:
 
     # -- affichage  ------------------------------------------
 
-def dessiner(self, robot: Optional[Case] = None) -> str:
+    def dessiner(self, robot: Optional[Case] = None) -> str:
         """Representation texte de la carte mentale. '?' = inconnu."""
         symboles = {INCONNU: "?", LIBRE: ".", MUR: "#", ARMOIRE: "A",
                     DICTIONNAIRE: "D", RESIDENT: "P"}
@@ -133,3 +138,16 @@ def dessiner(self, robot: Optional[Case] = None) -> str:
                     ligne += symboles[self.etat((l, c))]# Si c'est INCONNU retourné par "self.etat((l,c))" alors ligne += "?"
             lignes.append(ligne)
         return "\n".join(lignes)
+
+
+
+
+
+
+
+"""
+>>> list((6, 4))      # tuple → list
+[6, 4]
+>>> tuple([6, 4])     # list → tuple
+(6, 4)
+"""
