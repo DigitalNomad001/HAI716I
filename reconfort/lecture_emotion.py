@@ -1,5 +1,7 @@
 import reconfort.reconfort_io as rio
 
+# reçoit le message et le dictionnaire, renvoie l'émotion et l'intensité associées
+
 def lire_emotion(message, dictionnaire):
     mots = rio.normaliser(message)
     print("mots normalises :", mots)
