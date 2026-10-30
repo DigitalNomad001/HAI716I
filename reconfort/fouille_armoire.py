@@ -94,20 +94,21 @@ def chercher_objet(emotion, intensite, selecteur, armoire, vus):
 
 # Test avec un exemple
 
-armoire = rio.charger_armoire("donnees/armoire_standard.json")
-selecteur = armoire["casier_depart"]
-vus = {}
+if __name__ == "__main__":
+    armoire = rio.charger_armoire("donnees/armoire_standard.json")
+    selecteur = armoire["casier_depart"]
+    vus = {}
 
-demandes = [("tristesse", "moyenne"), ("surprise", "forte"), ("anticipation", "forte")]
+    demandes = [("tristesse", "moyenne"), ("surprise", "forte"), ("anticipation", "forte")]
 
-for emotion, intensite in demandes:
-    print("Demande : ", emotion, intensite, "- selecteur en ", selecteur)
-    objet, casier, repli, selecteur, actions = chercher_objet(emotion, intensite, selecteur, armoire, vus)
+    for emotion, intensite in demandes:
+        print("Demande : ", emotion, intensite, "- selecteur en ", selecteur)
+        objet, casier, repli, selecteur, actions = chercher_objet(emotion, intensite, selecteur, armoire, vus)
 
-    for action, arg in actions:
-        print("  ", action, arg)
-    if objet is None:
-        print("  -> armoire vide")
-    else:
-        print("  ->", objet, " dans le casier ", casier, "- repli : ", repli)
-    print()
+        for action, arg in actions:
+            print("  ", action, arg)
+        if objet is None:
+            print("  -> armoire vide")
+        else:
+            print("  ->", objet, " dans le casier ", casier, "- repli : ", repli)
+        print()
