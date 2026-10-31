@@ -11,3 +11,4 @@ sorties/
 # Configuration des editeurs
 .vscode/
 .idea/
+.DS_Store
