@@ -1,0 +1,13 @@
+# Fichiers generes par Python
+__pycache__/
+*.pyc
+
+# Environnement virtuel
+.venv/
+
+# Sorties produites par le programme
+sorties/
+
+# Configuration des editeurs
+.vscode/
+.idea/
