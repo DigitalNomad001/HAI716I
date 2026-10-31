@@ -4,11 +4,15 @@ NB_COLONNES = 8 # une colonne par émotion, elle boucle (1 -> 2 -> ... -> 7 -> 0
 NB_LIGNES = 3 # une ligne par intensité
 
 # reçoit l'armoire, la ligne et la colonne, renvoie l'objet dans le casier correspondant ou None si le casier est vide
-def regarder_casier(armoire, ligne, colonne):
+"""def regarder_casier(armoire, ligne, colonne):
     for casier in armoire["casiers"]:
         if casier["ligne"] == ligne and casier["colonne"] == colonne:
             return casier["objet"]
     return None
+
+Je ne utilise pas mais je la garde pour l'instant(modifié par Hao)
+
+"""
 
 # reçoit la ligne et la colonne, renvoie la liste des candidats dans l'ordre de priorité
 # ligne et collonne : le casier cible (intensité  et émotion lues)
@@ -39,7 +43,7 @@ def liste_candidats(ligne, colonne):
 # reçoit le selecteur, la ligne cible et la colonne cible, l'armoire, les objets vus et les actions, renvoie la nouvelle position du selecteur
 # À chaque case traversée, on regarde le casier et note dans "vus"
 # Chque déplacement est ajouté à "actions" pour la trace
-def aller_au_casier(selecteur, l_cible, c_cible, armoire, vus, actions):
+def aller_au_casier(selecteur, l_cible, c_cible,  vus, actions,voir_casier):
     l, c = selecteur
 
     # On de déplace sur la bonne ligne
@@ -48,7 +52,7 @@ def aller_au_casier(selecteur, l_cible, c_cible, armoire, vus, actions):
             l, direction = l + 1, "S"
         else:
             l, direction = l - 1, "N"
-        vus[(l, c)] = regarder_casier(armoire, l, c)
+        vus[(l, c)] = voir_casier(l, c)
         actions.append(("CHERCHER", direction))
 
     # On se déplace sur la bonne colonne
@@ -58,20 +62,20 @@ def aller_au_casier(selecteur, l_cible, c_cible, armoire, vus, actions):
             c, direction = (c + 1) % NB_COLONNES, "E"
         else:
             c, direction = (c - 1) % NB_COLONNES, "O"
-        vus[(l, c)] = regarder_casier(armoire, l, c)
+        vus[(l, c)] = voir_casier(l, c)
         actions.append(("CHERCHER", direction))
 
     return [l, c]
 
 # reçoit l'émotion, l'intensité, le selecteur, l'armoire et les objets vus
 # renvoie l'objet trouvé (ou None), le casier correspondant, le type de repli, le nouveau selecteur et la liste des actions effectuées
-def chercher_objet(emotion, intensite, selecteur, armoire, vus):
+def chercher_objet(emotion, intensite, selecteur, armoire, vus,voir_casier):
     ligne = armoire["intensites"].index(intensite)
     colonne = armoire["emotions"].index(emotion)
     actions = []
 
     # on voit le casier devant lequel on se trouve avant de se déplacer
-    vus[tuple(selecteur)] = regarder_casier(armoire, selecteur[0], selecteur[1])
+    vus[tuple(selecteur)] = voir_casier(selecteur[0], selecteur[1])
 
     # on essaie les 15 candidats dans l'ordre de priorité
     for ordre, l, c, repli in liste_candidats(ligne, colonne):
@@ -79,19 +83,22 @@ def chercher_objet(emotion, intensite, selecteur, armoire, vus):
         if (l, c) in vus and vus[(l, c)] is None:
             continue
 
-        selecteur = aller_au_casier(selecteur, l, c, armoire, vus, actions)
+        selecteur = aller_au_casier(selecteur, l, c, vus, actions,voir_casier)
         # on regarde le casier, si on y trouve un objet, on le prend et on arrête la recherche
         objet = vus[(l, c)]
         if objet is not None:
             actions.append(("PRENDRE", objet))
+            vus[(l, c)] = None        # on vient de le prendre : le casier est vide
             return objet, [l, c], repli, selecteur, actions
 
         # si le casier est vide, on continue la recherche
 
     # les 15 candidats vides : echec avec motif "armoire vide"
-    return None, None, None, selecteur, actions
+    return None, None, "aucun", selecteur, actions
 
 
+
+"""
 # Test avec un exemple
 
 if __name__ == "__main__":
@@ -112,3 +119,5 @@ if __name__ == "__main__":
         else:
             print("  ->", objet, " dans le casier ", casier, "- repli : ", repli)
         print()
+
+"""

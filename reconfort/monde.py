@@ -39,11 +39,58 @@ class Monde:
     (Plus tard : contenu reel de l'armoire et selecteur.)
     """
 
-    def __init__(self, carte: Dict[str, Any]) -> None:
+    def __init__(self, carte: Dict[str, Any],armoire: Dict[str, Any] = None) -> None:
         self._grille = carte["grille"]                 # reserve au simulateur,lire la grille de la carte dans le json
         self.hauteur = carte["dimensions"]["hauteur"] #lire les dimension(hauteur) de la carte dans json
         self.largeur = carte["dimensions"]["largeur"]  #lire les dimension(largeur) de la carte dans json
         self.position: Case = tuple(carte["depart_robot"]) #lire la position(case) du départ de robit
+
+        # Contenu reel de l'armoire : SEUL endroit ou l'on lit le champ "objet".
+        self._contenu: Dict[Case, Any] = {}
+        self.selecteur: Case = (0, 0)
+        self.nb_lignes = 3
+        self.nb_colonnes = 8
+        if armoire is not None:
+            for casier in armoire["casiers"]:
+                self._contenu[(casier["ligne"], casier["colonne"])] = casier["objet"]
+            self.selecteur = tuple(armoire["casier_depart"])
+            self.nb_lignes = len(armoire["intensites"])
+            self.nb_colonnes = len(armoire["emotions"])
+
+ 
+    # -- l'armoire --------------------------------------------------------
+ #les fonction dans fouille_armoire.py vont appeler cette fonction pour savoir l'objet
+    def contenu_casier(self, ligne: int, colonne: int):
+        """Ce qu'il y a reellement dans ce casier (None s'il est vide).
+        Passee a chercher_objet sous le nom voir_casier."""
+        return self._contenu.get((ligne, colonne))
+ 
+    def prendre(self, ligne: int, colonne: int):
+        """Action PRENDRE : retire l'objet du casier et le renvoie."""
+        return self._contenu.pop((ligne, colonne), None)
+
+    def chercher(self, direction: str) -> None:
+            """Action CHERCHER : deplace le selecteur d'un casier.
+            N/S changent la ligne SANS bouclage, E/O changent la colonne AVEC bouclage."""
+            l, c = self.selecteur
+            if direction == "N":
+                l -= 1
+            elif direction == "S":
+                l += 1
+            elif direction == "E":
+                c = (c + 1) % self.nb_colonnes
+            elif direction == "O":
+                c = (c - 1) % self.nb_colonnes
+            else:
+                raise DeplacementIllegal(f"direction inconnue {direction!r}")
+            if not 0 <= l < self.nb_lignes:
+                raise DeplacementIllegal(f"CHERCHER {direction} : le selecteur sortirait de l'armoire")
+            self.selecteur = (l, c)
+    
+    def contenu_courant(self):
+        """L'objet du casier devant lequel se trouve le selecteur (None si vide)."""
+        return self._contenu.get(self.selecteur)
+
 
     # -- la realite --------------------------------------------------------
 
@@ -82,3 +129,9 @@ class Monde:
         """Le robot est-il orthogonalement adjacent a `cible` ?
         (condition de CONSULTER, CHERCHER, PRENDRE, DONNER)"""
         return tuple(cible) in {v for _, v in voisins(self.position)}
+
+    
+
+    
+
+    

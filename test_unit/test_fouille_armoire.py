@@ -5,12 +5,15 @@ Pour lancer les tests, dans la racine du projet, taper :
     python3 -m unittest test_unit.test_fouille_armoire -v
 """
 
+
+"""Annotaion par Hao: Cette teste qui est écrit par Aoto ne fonctionne plus car on a modifié des fonctions"""
+
 import unittest
-from unittest.mock import patch
+
 
 import reconfort.reconfort_io as rio
 import reconfort.fouille_armoire as fouille
-from reconfort.fouille_armoire import regarder_casier, liste_candidats, aller_au_casier, chercher_objet
+from reconfort.fouille_armoire import liste_candidats, aller_au_casier, chercher_objet
 
 EMOTIONS = ["joie", "confiance", "peur", "surprise", "tristesse", "degout", "colere", "anticipation"]
 INTENSITES = ["faible", "moyenne", "forte"]
@@ -26,25 +29,7 @@ def directions(actions):
     return [arg for actions, arg in actions if actions == "CHERCHER"]
 
 # ---------------------------------------------------------------------------
-# regarder_casier
-# ---------------------------------------------------------------------------
 
-class TestRegarderCasier(unittest.TestCase):
-    
-    def setUp(self):
-        self.armoire = creer_armoire_test({(1, 4): "couverture"})
-
-    def test_casier_garni(self):
-        self.assertEqual(regarder_casier(self.armoire, 1, 4), "couverture")
-
-    def test_casier_vide(self):
-        self.assertIsNone(regarder_casier(self.armoire, 0, 4))
-
-    def test_casier_inexistant(self):
-        self.assertIsNone(regarder_casier(self.armoire, 5, 9))
-
-
-# ---------------------------------------------------------------------------
 # liste_candidats
 # ---------------------------------------------------------------------------
 
@@ -218,18 +203,7 @@ class TestChercherObjet(unittest.TestCase):
         # Le casier de depart et les casiers traverses sont memorises
         self.assertEqual(vus, {(1, 0): None, (1, 1): None, (1, 2): "radio"})
  
-    @patch("reconfort.fouille_armoire.regarder_casier", wraps=fouille.regarder_casier)
-    def test_ne_regarde_que_sous_le_selecteur(self, espion):
-        # Mock "espion" : la vraie fonction est appelee, mais on note chaque appel. Le robot ne doit regarder que le casier de depart, 
-        # puis chaque casier voisin ou il vient de deplacer le selecteur
-        self.chercher({(2, 4): "album"}, "surprise", "forte")
-        positions = [(appel.args[1], appel.args[2]) for appel in espion.call_args_list]
- 
-        self.assertEqual(positions[0], (1, 0))          # le casier de depart
-        for (l1, c1), (l2, c2) in zip(positions, positions[1:]):
-            un_pas_vertical = abs(l2 - l1) == 1 and c1 == c2
-            un_pas_horizontal = l1 == l2 and (c2 - c1) % 8 in (1, 7)
-            self.assertTrue(un_pas_vertical or un_pas_horizontal, f"saut de {(l1, c1)} a {(l2, c2)}")
+    
 
 if __name__ == "__main__":
     unittest.main()

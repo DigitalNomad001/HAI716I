@@ -17,7 +17,7 @@ GRILLE_B3 = [
     "######",
 ]
 
-
+#Cette function nous permet de tester les grilles différentes
 def traversable_dans(grille):
     """Fabrique une fonction est_traversable pour une grille ecrite a la main."""
     def est_traversable(case):
@@ -28,6 +28,8 @@ def traversable_dans(grille):
     return est_traversable
 
 
+
+"""Une test unitaire avec assert_Equal pour tester les voisins de case(3,5)"""
 class TestVoisins(unittest.TestCase):
 
     def test_quatre_voisins(self):
@@ -54,6 +56,7 @@ class TestDirection(unittest.TestCase):
 
 class TestPlusCourtChemin(unittest.TestCase):
 
+    """" Avant de lancer les fonctions qui commencent par test, unittest lance setUP"""
     def setUp(self):
         self.ok = traversable_dans(GRILLE_B3)
 
@@ -61,7 +64,7 @@ class TestPlusCourtChemin(unittest.TestCase):
         """Chaque pas relie deux cases adjacentes et traversables."""
         for a, b in zip(chemin, chemin[1:]):
             direction_vers(a, b)                 # leve si non adjacentes
-            self.assertTrue(self.ok(b), f"{b} n'est pas traversable")
+            self.assertTrue(self.ok(b), f"{b} n'est pas traversable")#self.ok(b) appel la fonction intérieure "est_traversable(b)"
 
     def test_exemple_annexe_b3(self):
         chemin = plus_court_chemin((1, 1), {(1, 4)}, self.ok)
@@ -82,6 +85,8 @@ class TestPlusCourtChemin(unittest.TestCase):
     def test_aucun_chemin(self):
         # On bloque (2, 4) : (1, 4) n'a plus aucun voisin traversable.
         bloque = lambda case: self.ok(case) and case != (2, 4)
+        """self.ok(case) = est_traversable(case) dans la fonction traversable_dans(grille)
+        cela veut dire que bloque est une fonction qui appel "est_traversable" mais qui ne passe pas case(2,4)"""
         self.assertIsNone(plus_court_chemin((1, 1), {(1, 4)}, bloque))
 
     def test_arrivees_vide(self):
